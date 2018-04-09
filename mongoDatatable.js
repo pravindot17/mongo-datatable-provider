@@ -6,7 +6,7 @@ var lib_es = {
 };
 
 /**
- * mListQuestion - This method is used to fetch the json data based on a datatable request
+ * getDataTableMongo - This method is used to fetch the json data based on a datatable request
  *
  * @param  data {object} Request object
  * @param  callback {function} callback function
@@ -28,6 +28,7 @@ function getDataTableMongo(mongo_con, reqData, collection_name, callback) {
                 __logger.error(err);
                 callback(err, null);
             } else {
+                __logger.debug("rows", JSON.stringify(rows));
                 callback(null, rows);
             }
         });
@@ -51,7 +52,7 @@ function runDataTableQueries(mongo_con, reqData, collection_name, responseData, 
             }
 
             __logger.debug("search criteria", JSON.stringify(search));
-            mongo_con.__count(collection_name, JSON.parse(JSON.stringify(search)), function(err, count) {
+            mongo_con.conn.collection(collection_name).count(search, function (err, count) {
                 if(err) {
                     __logger.debug("List:: error while getting total records", err.message);
                     fcallback(err, null);
@@ -73,11 +74,9 @@ function runDataTableQueries(mongo_con, reqData, collection_name, responseData, 
                 limit = dataTableReq.length;
             }
 
-            // __logger.debug("dataTableReq.search.value", dataTableReq.search.value);
             if(dataTableReq.search.value) {
                 reqData.query.match.$or = generateSearchQuery(dataTableReq, reqData);
             }
-            // __logger.debug("reqData.query.match", JSON.stringify(reqData.query.match));
 
             if(dataTableReq.order.length) {
                 var sortObj = generateOrderQuery(dataTableReq);
@@ -152,7 +151,6 @@ function generateSearchQuery(requestQuery, reqData) {
         if (column.orderable === true && column.data) {
 
             var search = {};
-
             var col = column.data;
             if(reqData.query.columnsMap) {
                 var newCol = (reqData.query.columnsMap[col]? reqData.query.columnsMap[col].name:null) || col;
