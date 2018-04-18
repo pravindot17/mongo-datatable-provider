@@ -1,7 +1,7 @@
 Welcome to mongo-datatable-provider
 ===================
 
-THis small library to fetch data from db using datatable request with manageable search, sort and pagination facility
+This is a small library to fetch data from db using datatable request with manageable search, sort and pagination facility
 
 
 ----------
